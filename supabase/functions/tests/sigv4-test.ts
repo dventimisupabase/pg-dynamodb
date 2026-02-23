@@ -7,7 +7,7 @@ import {
   buildCanonicalRequest,
   buildStringToSign,
   signRequest,
-} from "./sigv4.ts";
+} from "../dynamodb-bridge/sigv4.ts";
 
 Deno.test("formatAmzDate: formats date as ISO8601 basic", () => {
   const date = new Date("2024-01-15T09:30:00Z");

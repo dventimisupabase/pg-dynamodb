@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert";
-import { unmarshalValue, unmarshalItem } from "./unmarshal.ts";
+import { unmarshalValue, unmarshalItem } from "../dynamodb-bridge/unmarshal.ts";
 
 Deno.test("unmarshalValue: string (S)", () => {
   assertEquals(unmarshalValue({ S: "hello" }), "hello");

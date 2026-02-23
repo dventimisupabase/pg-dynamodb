@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert";
-import { handleRequest } from "./index.ts";
+import { handleRequest } from "../dynamodb-bridge/index.ts";
 
 // Helper to create a valid HS256 JWT
 async function createJWT(
