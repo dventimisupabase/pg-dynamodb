@@ -53,6 +53,22 @@ deno task test
 
 # Run SQL tests (pgTAP, requires local Supabase)
 supabase test db
+
+# Serve Edge Function locally
+supabase functions serve
+```
+
+## Deployment
+
+```sh
+# Link to your remote project (once)
+supabase link --project-ref <your-project-ref>
+
+# Apply migrations
+supabase db push
+
+# Deploy the Edge Function
+supabase functions deploy dynamodb-bridge
 ```
 
 ## Conventions

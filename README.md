@@ -18,7 +18,7 @@ Supabase customers sometimes need to read data that lives in DynamoDB. Rather th
 
 **1. Apply the SQL migrations** with `supabase db push` (or apply `supabase/migrations/` manually). This creates a config table, an HTTP helper, three DynamoDB primitives (`dynamodb_get_item`, `dynamodb_query_index`, `dynamodb_scan`), and two convenience wrappers (`dynamodb_query_all`, `dynamodb_scan_all`).
 
-**2. Deploy the Edge Function** from `supabase/functions/dynamodb-bridge/`. It receives requests from `pg_http`, signs them with SigV4, calls DynamoDB, unmarshals the response, and returns plain JSON.
+**2. Deploy the Edge Function** with `supabase functions deploy dynamodb-bridge`. It receives requests from `pg_http`, signs them with SigV4, calls DynamoDB, unmarshals the response, and returns plain JSON.
 
 **3. Query from SQL:**
 
@@ -31,10 +31,30 @@ SELECT * FROM dynamodb_query_all(
 );
 ```
 
+## Deployment
+
+```sh
+# Link to your remote project (once)
+supabase link --project-ref <your-project-ref>
+
+# Apply migrations
+supabase db push
+
+# Deploy the Edge Function
+supabase functions deploy dynamodb-bridge
+```
+
 ## Development
 
 ```sh
+# Run Edge Function tests
 deno task test
+
+# Run SQL tests (pgTAP, requires local Supabase)
+supabase test db
+
+# Serve Edge Function locally
+supabase functions serve
 ```
 
 See [prd-dynamodb-bridge.md](prd-dynamodb-bridge.md) and [tech-spec-dynamodb-bridge.md](tech-spec-dynamodb-bridge.md) for full details.
