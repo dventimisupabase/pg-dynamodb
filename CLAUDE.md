@@ -13,22 +13,22 @@ Read-only (GetItem, Query, Scan). Writes are out of scope for v1.
 - **Edge Function**: Deno / TypeScript (Supabase Edge Functions)
 - **Database**: PL/pgSQL with `pg_http` extension
 - **Crypto**: `crypto.subtle` for SigV4 signing and JWT verification — no external dependencies
-- **Testing**: `Deno.test` with `@std/assert`
+- **Testing**: `Deno.test` with `@std/assert` (Edge Function); pgTAP via `supabase test db` (SQL)
 - **Tooling**: mise (deno version management)
 
 ## Project Structure
 
 ```
-sql/                              # PL/pgSQL migrations (NN_name.sql)
-  00_config.sql                   #   pg_http extension + config table
-  01_http_helper.sql              #   _dynamodb_http_post() shared helper
-  02_get_item.sql                 #   dynamodb_get_item() primitive
-  03_query_index.sql              #   dynamodb_query_index() primitive
-  04_scan.sql                     #   dynamodb_scan() primitive
-  05_query_all.sql                #   dynamodb_query_all() ergonomic wrapper
-  06_scan_all.sql                 #   dynamodb_scan_all() ergonomic wrapper
-supabase/functions/
-  dynamodb-bridge/
+supabase/
+  config.toml                     # Supabase CLI configuration
+  migrations/
+    <timestamp>_dynamodb_bridge.sql  # All PL/pgSQL objects in one migration
+  tests/
+    database/
+      00_schema.test.sql            # pgTAP: extension, config table, seed data
+      01_functions.test.sql         # pgTAP: function signatures and properties
+  functions/
+    dynamodb-bridge/
     index.ts                      # Request handler (JWT → parse → SigV4 → call → unmarshal)
     types.ts                      # TypeScript types (DynamoDB attributes, requests, responses)
     errors.ts                     # Error normalization with source attribution
@@ -45,19 +45,23 @@ tech-spec-dynamodb-bridge.md      # Technical specification
 ## Development
 
 ```sh
-# Run all tests
+# Run Edge Function tests
 deno test supabase/functions/tests/*-test.ts
 
 # Or via task
 deno task test
+
+# Run SQL tests (pgTAP, requires local Supabase)
+supabase test db
 ```
 
 ## Conventions
 
-- **SQL migrations**: Named `NN_name.sql` in `sql/`, numbered sequentially
+- **SQL migrations**: Timestamped files in `supabase/migrations/`, managed by the Supabase CLI
 - **SQL primitives** return `TABLE (item jsonb, next_token text)`, marked `STABLE` with cost hints
 - **SQL wrappers** (e.g. `dynamodb_query_all`) loop with `max_pages` and emit `RAISE NOTICE/WARNING` diagnostics
-- **Tests** live in `supabase/functions/tests/*-test.ts` (Supabase convention)
+- **Edge Function tests** live in `supabase/functions/tests/*-test.ts` (Deno)
+- **SQL tests** live in `supabase/tests/database/*.test.sql` (pgTAP)
 - **Edge Function** uses dependency injection (`envGet`, `fetchFn`) for testability
 - **Errors** use PostgreSQL SQLSTATE `FDW01` and structured JSON with `source` attribution (`dynamodb`, `edge_function`, `network`)
 

@@ -1,0 +1,15 @@
+[project_id]
+# Replace with your Supabase project ref
+# project_id = "<project-ref>"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
