@@ -102,7 +102,7 @@ select function_lang_is('public', 'dynamodb_query_all',
 
 select function_returns('public', 'dynamodb_query_all',
   ARRAY['text', 'text', 'text', 'jsonb', 'integer'],
-  'setof record', 'dynamodb_query_all should return setof record');
+  'setof jsonb', 'dynamodb_query_all should return setof jsonb');
 
 select volatility_is('public', 'dynamodb_query_all',
   ARRAY['text', 'text', 'text', 'jsonb', 'integer'],
@@ -126,7 +126,7 @@ select function_lang_is('public', 'dynamodb_scan_all',
 
 select function_returns('public', 'dynamodb_scan_all',
   ARRAY['text', 'text', 'jsonb', 'integer', 'integer'],
-  'setof record', 'dynamodb_scan_all should return setof record');
+  'setof jsonb', 'dynamodb_scan_all should return setof jsonb');
 
 select volatility_is('public', 'dynamodb_scan_all',
   ARRAY['text', 'text', 'jsonb', 'integer', 'integer'],
